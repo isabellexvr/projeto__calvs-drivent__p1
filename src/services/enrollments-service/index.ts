@@ -1,17 +1,28 @@
 import { request } from "@/utils/request";
-import { notFoundError, requestError } from "@/errors";
+import { notFoundError } from "@/errors";
 import addressRepository, { CreateAddressParams } from "@/repositories/address-repository";
 import enrollmentRepository, { CreateEnrollmentParams } from "@/repositories/enrollment-repository";
 import { exclude } from "@/utils/prisma-utils";
-import { Address, Enrollment } from "@prisma/client";
+import { Enrollment } from "@prisma/client";
+import { AxiosResponse } from "axios";
+import { ViaCEPAddress, AddressObjEntity, Address } from "@/protocols";
 
-async function getAddressFromCEP(cep: string) {
-  const result = await request.get(`https://viacep.com.br/ws/${cep}/json/`);
+async function getAddressFromCEP(cep: string): Promise<ViaCEPAddress> {
+  const result = await request.get(`https://viacep.com.br/ws/${cep}/json/`) as AxiosResponse<AddressObjEntity>;
 
   if (!result.data) {
     throw notFoundError();
   }
-  return result;
+
+  const final = result.data;
+
+  return {
+    logradouro: final.logradouro,
+    complemento: final.complemento,
+    bairro: final.bairro,
+    cidade: final.localidade,
+    uf: final.uf
+  };
 }
 
 async function getOneWithAddressByUserId(userId: number): Promise<GetOneWithAddressByUserIdResult> {
@@ -39,11 +50,23 @@ function getFirstAddress(firstAddress: Address): GetAddressResult {
 type GetAddressResult = Omit<Address, "createdAt" | "updatedAt" | "enrollmentId">;
 
 async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollmentWithAddress) {
-  const enrollment = exclude(params, "address");
+  const finalEnrollment = {
+    name: params.name,
+    cpf: params.cpf,
+    birthday: new Date(params.birthday),
+    phone: params.phone,
+    userId: params.userId
+  };
   const address = getAddressForUpsert(params.address);
 
-  //TODO - Verificar se o CEP é válido
-  const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"));
+  const result = await request.get(`https://viacep.com.br/ws/${address.cep}/json/`) as AxiosResponse<AddressObjEntity>;
+  console.log(address.cep)
+  console.log(result.data)
+
+  if (result.data.erro) {
+    throw notFoundError();
+  }
+  const newEnrollment = await enrollmentRepository.upsert(params.userId, finalEnrollment, exclude(finalEnrollment, "userId"));
 
   await addressRepository.upsert(newEnrollment.id, address, address);
 }
