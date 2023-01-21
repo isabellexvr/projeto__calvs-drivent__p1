@@ -10,7 +10,7 @@ import { ViaCEPAddress, AddressObjEntity, Address } from "@/protocols";
 async function getAddressFromCEP(cep: string): Promise<ViaCEPAddress> {
   const result = await request.get(`https://viacep.com.br/ws/${cep}/json/`) as AxiosResponse<AddressObjEntity>;
 
-  if (result.data.erro) {
+  if (result.status == 400) {
     throw notFoundError();
   }
 
