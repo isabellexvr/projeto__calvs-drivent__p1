@@ -60,8 +60,6 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   const address = getAddressForUpsert(params.address);
 
   const result = await request.get(`https://viacep.com.br/ws/${address.cep}/json/`) as AxiosResponse<AddressObjEntity>;
-  console.log(address.cep)
-  console.log(result.data)
 
   if (result.data.erro) {
     throw notFoundError();
