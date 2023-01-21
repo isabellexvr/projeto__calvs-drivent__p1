@@ -10,18 +10,16 @@ import { ViaCEPAddress, AddressObjEntity, Address } from "@/protocols";
 async function getAddressFromCEP(cep: string): Promise<ViaCEPAddress> {
   const result = await request.get(`https://viacep.com.br/ws/${cep}/json/`) as AxiosResponse<AddressObjEntity>;
 
-  if (!result.data) {
+  if (result.data.erro) {
     throw notFoundError();
   }
 
-  const final = result.data;
-
   return {
-    logradouro: final.logradouro,
-    complemento: final.complemento,
-    bairro: final.bairro,
-    cidade: final.localidade,
-    uf: final.uf
+    logradouro: result.data.logradouro,
+    complemento: result.data.complemento,
+    bairro: result.data.bairro,
+    cidade: result.data.localidade,
+    uf: result.data.uf
   };
 }
 
