@@ -10,3 +10,11 @@ export async function getAllTicketTypes(_req: Request, res: Response) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
   }
 }
+
+export async function getUserTicket(_req: Request, res: Response) {
+  try {
+    console.log("a");
+  } catch (error) {
+    console.log(error);
+  }
+}
