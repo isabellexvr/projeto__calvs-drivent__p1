@@ -1,4 +1,5 @@
 import ticketsRepository from "@/repositories/tickets-repository";
+import { notFoundError } from "@/errors";
 
 type TicketType = {
     id: number,
@@ -32,12 +33,16 @@ async function getAllTicketTypes(): Promise<TicketType[]> {
   return await ticketsRepository.findAllTypes();
 }
 
-async function getTicketByUser() {
-  //return await
+async function getTicketByUser(enrollmentId: number ) {
+  const ticket =  await ticketsRepository.findUsersTicket(enrollmentId);
+  console.log(ticket);
+  if(!ticket) throw notFoundError();
+  return ticket;
 }
 
 const ticketsService = {
   getAllTicketTypes,
+  getTicketByUser
 };
 
 export default ticketsService;
