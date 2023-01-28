@@ -1,14 +1,15 @@
 import ticketsRepository from "@/repositories/tickets-repository";
-import { notFoundError } from "@/errors";
+import { notFoundError, invalidDataError } from "@/errors";
+import { TicketStatus } from "@prisma/client";
 
 type TicketType = {
-    id: number,
-    name: string,
-    price: number,
-    isRemote: boolean,
-    includesHotel: boolean,
-    createdAt: Date,
-    updatedAt: Date,
+  id: number,
+  name: string,
+  price: number,
+  isRemote: boolean,
+  includesHotel: boolean,
+  createdAt: Date,
+  updatedAt: Date,
 }
 
 type Ticket = {
@@ -33,16 +34,29 @@ async function getAllTicketTypes(): Promise<TicketType[]> {
   return await ticketsRepository.findAllTypes();
 }
 
-async function getTicketByUser(enrollmentId: number ) {
-  const ticket =  await ticketsRepository.findUsersTicket(enrollmentId);
+async function getTicketByUser(enrollmentId: number) {
+  const ticket = await ticketsRepository.findUsersTicket(enrollmentId);
   console.log(ticket);
-  if(!ticket) throw notFoundError();
+  if (!ticket) throw notFoundError();
   return ticket;
+}
+
+async function postTicket(enrollmentId: number, ticketTypeId: number) {
+  const status: TicketStatus = "RESERVED";
+  const data = {
+    enrollmentId,
+    ticketTypeId,
+    status
+  };
+  const postedTicket = await ticketsRepository.postNewTicket( data );
+  if(!postTicket) throw invalidDataError(["enrollmentId", "ticketTypeId"]);
+  return postedTicket;
 }
 
 const ticketsService = {
   getAllTicketTypes,
-  getTicketByUser
+  getTicketByUser,
+  postTicket
 };
 
 export default ticketsService;
