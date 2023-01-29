@@ -8,7 +8,8 @@ export async function getTicketPaymentInfo(req: AuthenticatedRequest, res: Respo
   const { userId } = req;
   if(!ticketId) return res.status(httpStatus.BAD_REQUEST).send("nenhum id de ticket foi mandado");
   try {
-    const ticket = await paymentsService.checkTicketPaymentInfo(Number(ticketId), userId);
+    await paymentsService.checkTicketPaymentInfo(Number(ticketId), userId);
+    const ticket = await paymentsService.getPaymentInfo(Number(ticketId));
     return res.status(httpStatus.OK).send(ticket);
   } catch (error) {
     if (error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error.message);
@@ -17,7 +18,7 @@ export async function getTicketPaymentInfo(req: AuthenticatedRequest, res: Respo
   }
 }
 
-type receive = {
+type PaymentPayload = {
 	ticketId: number,
 	cardData: {
 		issuer: string,
@@ -27,21 +28,17 @@ type receive = {
     cvv: number
 	}
 }
-
-type goes = {
-	ticketId: number,
-	cardData: {
-		issuer: string,
-    number: number,
-    name: string,
-    expirationDate: Date,
-    cvv: number
-	}
-}
-//através do tickedId, pegar price no ticketType
-//
 
 export async function postTicketPayment(req: AuthenticatedRequest, res: Response) {
-  const { ticketId, cardData } = req.body;
-  //
+  const { ticketId, cardData } = req.body as PaymentPayload;
+  const { userId } = req;
+  try{
+    await paymentsService.checkTicketPaymentInfo(ticketId, userId);
+    const payment = await paymentsService.postTicketPayment(ticketId, cardData);
+    return res.status(httpStatus.OK).send(payment);
+  }catch(error) {
+    if (error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error.message);
+    if (error.name === "invalidDataError") return res.status(httpStatus.NOT_FOUND).send(error.message);
+    if (error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error.message);
+  }
 }
