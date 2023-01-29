@@ -30,7 +30,6 @@ type PaymentPayload = {
 }
 
 export async function postTicketPayment(req: AuthenticatedRequest, res: Response) {
-  console.log("oi");
   const { ticketId, cardData } = req.body as PaymentPayload;
   const { userId } = req;
   try{
@@ -41,7 +40,6 @@ export async function postTicketPayment(req: AuthenticatedRequest, res: Response
     if (error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error.message);
     if (error.name === "invalidDataError") return res.status(httpStatus.BAD_REQUEST).send(error.message);
     if (error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error.message);
-    console.log(error);
-    return res.status(500);
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
   }
 }
