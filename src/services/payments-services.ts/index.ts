@@ -27,4 +27,3 @@ const paymentsService = {
 };
 
 export { paymentsService };
-
