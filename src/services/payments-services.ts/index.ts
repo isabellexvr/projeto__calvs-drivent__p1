@@ -12,7 +12,7 @@ async function checkTicketPaymentInfo(ticketId: number | null, userId: number) {
 
 async function checkTicketExistence(ticketId: number) {
   const ticket = await paymentsRepository.getTicketById(ticketId);
-  if(!ticket) throw requestError(400, "o ticket informado não existe");
+  if(!ticket) throw notFoundError();
   return ticket;
 }
 
