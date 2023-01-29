@@ -5,8 +5,9 @@ import paymentsRepository from "@/repositories/payments-repository.ts";
 async function checkTicketPaymentInfo(ticketId: number | null, userId: number) {
   if (!ticketId) throw invalidDataError(["ticketId"]);
   await checkTicketExistence(ticketId);
-  const ticket = await checkIfTicketBelongsToUser(ticketId, userId);
-  return ticket;
+  await checkIfTicketBelongsToUser(ticketId, userId);
+  const paymentInfo = await paymentsRepository.getPaymentInfoByTicketId(ticketId);
+  return paymentInfo;
 }
 
 async function checkTicketExistence(ticketId: number) {

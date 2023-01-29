@@ -18,9 +18,16 @@ async function getUserTicket(ticketId: number, enrollmentId: number) {
   });
 }
 
+async function getPaymentInfoByTicketId(ticketId: number) {
+  return prisma.payment.findFirst({
+    where: { ticketId }
+  });
+}
+
 const paymentsRepository = {
   getTicketById,
-  getUserTicket
+  getUserTicket,
+  getPaymentInfoByTicketId
 };
 
 export default paymentsRepository;
