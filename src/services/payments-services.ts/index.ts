@@ -52,8 +52,8 @@ async function postTicketPayment(ticketId: number, cardData: Card) {
     cardIssuer: cardData.issuer,
     cardLastDigits: cardData.number.toString().slice(-4)
   };
-  const payment = await paymentsRepository.postPayment(data);
-  return payment;
+  await paymentsRepository.postPayment(data);
+  return data;
 }
 
 const paymentsService = {
