@@ -14,7 +14,7 @@ export async function getTicketPaymentInfo(req: AuthenticatedRequest, res: Respo
   } catch (error) {
     if (error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error.message);
     if (error.name === "invalidDataError") return res.status(httpStatus.NOT_FOUND).send(error.message);
-    if (error.name === "UnauthorizedError") return res.status(httpStatus.NOT_FOUND).send(error.message);
+    if (error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error.message);
   }
 }
 
