@@ -30,11 +30,12 @@ export async function ticketPost(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   try {
     const { id } = await enrollmentsService.getOneWithAddressByUserId(userId);
-    const postedTicket = await ticketsService.postTicket(id, ticketTypeId);
+    const postedTicket = await ticketsService.postTicket(id, Number(ticketTypeId));
     return res.status(httpStatus.CREATED).send(postedTicket);
   } catch (error) {
     if (error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error.message);
     if (error.name === "InvalidDataError") return res.status(httpStatus.NOT_FOUND).send(error.message);
+    console.log(error);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
   }
 }

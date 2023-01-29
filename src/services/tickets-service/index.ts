@@ -36,7 +36,6 @@ async function getAllTicketTypes(): Promise<TicketType[]> {
 
 async function getTicketByUser(enrollmentId: number) {
   const ticket = await ticketsRepository.findUsersTicket(enrollmentId);
-  console.log(ticket);
   if (!ticket) throw notFoundError();
   return ticket;
 }

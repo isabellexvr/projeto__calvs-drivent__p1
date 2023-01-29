@@ -16,7 +16,16 @@ async function findUsersTicket(enrollmentId: number) {
 
 async function postNewTicket(params: Omit<Ticket, "id" | "createdAt" | "updatedAt">) {
   return prisma.ticket.create({
-    data: params
+    data: params,
+    select: {
+      id: true,
+      status: true,
+      ticketTypeId: true,
+      enrollmentId: true,
+      TicketType: true,
+      createdAt: true,
+      updatedAt: true
+    }
   });
 }
 
