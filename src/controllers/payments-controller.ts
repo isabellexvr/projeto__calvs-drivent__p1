@@ -35,11 +35,12 @@ export async function postTicketPayment(req: AuthenticatedRequest, res: Response
   try{
     await paymentsService.checkTicketPaymentInfo(ticketId, userId);
     const payment = await paymentsService.postTicketPayment(ticketId, cardData);
-    return res.status(httpStatus.OK).send(payment);
+    return res.status(200).send(payment);
   }catch(error) {
     if (error.name === "NotFoundError") return res.status(httpStatus.NOT_FOUND).send(error.message);
     if (error.name === "invalidDataError") return res.status(httpStatus.BAD_REQUEST).send(error.message);
-    if (error.name === "UnauthorizedError") return res.status(httpStatus.UNAUTHORIZED).send(error.message);
+    if (error.name === "UnauthorizedError") return res.status(401).send(error.message);
+    if (error.name === "RequestError") return res.status(error.status).send(error.statusText);
     return res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error);
   }
 }

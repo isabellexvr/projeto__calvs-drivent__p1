@@ -29,10 +29,18 @@ async function postNewTicket(params: Omit<Ticket, "id" | "createdAt" | "updatedA
   });
 }
 
+async function updateTicketStatus(ticketId: number) {
+  return prisma.ticket.update({
+    where: { id: ticketId },
+    data: { status: "PAID" }
+  });
+}
+
 const ticketsRepository = {
   findAllTypes,
   findUsersTicket,
-  postNewTicket
+  postNewTicket,
+  updateTicketStatus
 };
 
 export default ticketsRepository;

@@ -1,6 +1,8 @@
-import { invalidDataError, notFoundError, unauthorizedError } from "@/errors";
+
+import { invalidDataError, notFoundError, requestError, unauthorizedError } from "@/errors";
 import enrollmentsService from "../enrollments-service";
 import paymentsRepository from "@/repositories/payments-repository.ts";
+import ticketsRepository from "@/repositories/tickets-repository";
 
 async function checkTicketPaymentInfo(ticketId: number | null, userId: number) {
   if (!ticketId) throw invalidDataError(["ticketId"]);
@@ -10,7 +12,7 @@ async function checkTicketPaymentInfo(ticketId: number | null, userId: number) {
 
 async function checkTicketExistence(ticketId: number) {
   const ticket = await paymentsRepository.getTicketById(ticketId);
-  if(!ticket) throw notFoundError();
+  if(!ticket) throw requestError(400, "o ticket informado não existe");
   return ticket;
 }
 
@@ -53,6 +55,7 @@ async function postTicketPayment(ticketId: number, cardData: Card) {
     cardLastDigits: cardData.number.toString().slice(-4)
   };
   const paymentInfo = await paymentsRepository.postPayment(data);
+  await ticketsRepository.updateTicketStatus(ticketId);
   return paymentInfo;
 }
 
