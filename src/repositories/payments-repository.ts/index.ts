@@ -1,19 +1,18 @@
+import { Enrollment } from "@prisma/client";
 import { prisma } from "@/config";
 
 async function getTicketById(ticketId: number) {
   return prisma.ticket.findFirst({ where: { id: ticketId } });
 }
 
-async function getUserTicket(ticketId: number, enrollmentId: number) {
+async function getUserTicket(ticketId: number, userId: number) {
   return prisma.ticket.findFirst({
+    include: { Enrollment: true },
     where: {
       AND: [
-        { 
-          id: ticketId
-        },
-        { 
-          enrollmentId
-        }]
+        { id: ticketId },
+        { Enrollment: { userId } }
+      ]
     }
   });
 }

@@ -1,5 +1,5 @@
 
-import { invalidDataError, notFoundError, requestError, unauthorizedError } from "@/errors";
+import { invalidDataError, notFoundError, unauthorizedError } from "@/errors";
 import enrollmentsService from "../enrollments-service";
 import paymentsRepository from "@/repositories/payments-repository.ts";
 import ticketsRepository from "@/repositories/tickets-repository";
@@ -12,13 +12,14 @@ async function checkTicketPaymentInfo(ticketId: number | null, userId: number) {
 
 async function checkTicketExistence(ticketId: number) {
   const ticket = await paymentsRepository.getTicketById(ticketId);
+
   if(!ticket) throw notFoundError();
   return ticket;
 }
 
 async function checkIfTicketBelongsToUser(ticketId: number, userId: number) {
-  const enrollment = await enrollmentsService.getOneWithAddressByUserId(userId);
-  const ticket = await paymentsRepository.getUserTicket(ticketId, enrollment.id);
+  const ticket = await paymentsRepository.getUserTicket(ticketId, userId);
+  console.log(ticket);
   if(!ticket) throw unauthorizedError();
   return ticket;
 }
