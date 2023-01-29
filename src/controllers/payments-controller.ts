@@ -16,3 +16,32 @@ export async function getTicketPaymentInfo(req: AuthenticatedRequest, res: Respo
     if (error.name === "UnauthorizedError") return res.status(httpStatus.NOT_FOUND).send(error.message);
   }
 }
+
+type receive = {
+	ticketId: number,
+	cardData: {
+		issuer: string,
+    number: number,
+    name: string,
+    expirationDate: Date,
+    cvv: number
+	}
+}
+
+type goes = {
+	ticketId: number,
+	cardData: {
+		issuer: string,
+    number: number,
+    name: string,
+    expirationDate: Date,
+    cvv: number
+	}
+}
+//através do tickedId, pegar price no ticketType
+//
+
+export async function postTicketPayment(req: AuthenticatedRequest, res: Response) {
+  const { ticketId, cardData } = req.body;
+  //
+}
