@@ -1,6 +1,4 @@
-
 import { invalidDataError, notFoundError, unauthorizedError } from "@/errors";
-import enrollmentsService from "../enrollments-service";
 import paymentsRepository from "@/repositories/payments-repository.ts";
 import ticketsRepository from "@/repositories/tickets-repository";
 
@@ -19,7 +17,6 @@ async function checkTicketExistence(ticketId: number) {
 
 async function checkIfTicketBelongsToUser(ticketId: number, userId: number) {
   const ticket = await paymentsRepository.getUserTicket(ticketId, userId);
-  console.log(ticket);
   if(!ticket) throw unauthorizedError();
   return ticket;
 }
